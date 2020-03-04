@@ -24,6 +24,11 @@ const Ingredients = () => {
   }, []);
   //useEffect with array like second parameter is like componentDidMount
 
+  useEffect(() => {
+    console.log('rendering Ingredients');
+  }, [userIngredients]);
+  //usefull to track a var that is changing
+  
   const addIngredientHandler = ingredient => {
     fetch('https://react-hooks-b3a98.firebaseio.com/ingredients.json', {
       method: 'POST',
