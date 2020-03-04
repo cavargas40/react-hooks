@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
@@ -7,28 +7,35 @@ import IngredientList from './IngredientList';
 const Ingredients = () => {
   const [userIngredients, setUserIngredients] = useState([]);
 
-  useEffect(() => {
-    fetch('https://react-hooks-b3a98.firebaseio.com/ingredients.json')
-      .then(response => response.json())
-      .then(responseData => {
-        const loadedIngredients = [];
-        for (const key in responseData) {
-          loadedIngredients.push({
-            id: key,
-            title: responseData[key].title,
-            amount: responseData[key].amount
-          });
-        }
-        setUserIngredients(loadedIngredients);
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch('https://react-hooks-b3a98.firebaseio.com/ingredients.json')
+  //     .then(response => response.json())
+  //     .then(responseData => {
+  //       const loadedIngredients = [];
+  //       for (const key in responseData) {
+  //         loadedIngredients.push({
+  //           id: key,
+  //           title: responseData[key].title,
+  //           amount: responseData[key].amount
+  //         });
+  //       }
+  //       setUserIngredients(loadedIngredients);
+  //     });
+  // }, []);
   //useEffect with array like second parameter is like componentDidMount
 
   useEffect(() => {
     console.log('rendering Ingredients');
   }, [userIngredients]);
   //usefull to track a var that is changing
-  
+
+  const filterIngredientHandler = useCallback(
+    filterIngredients => {
+      setUserIngredients(filterIngredients);
+    },
+    [setUserIngredients]
+  );
+
   const addIngredientHandler = ingredient => {
     fetch('https://react-hooks-b3a98.firebaseio.com/ingredients.json', {
       method: 'POST',
@@ -56,7 +63,7 @@ const Ingredients = () => {
       <IngredientForm onAddIngredient={addIngredientHandler} />
 
       <section>
-        <Search />
+        <Search onLoadIngredients={filterIngredientHandler} />
         <IngredientList
           ingredients={userIngredients}
           onRemoveItem={removeIngredientHandler}
