@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useMemo } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
@@ -35,7 +35,10 @@ const httpReducer = (curHttpState, action) => {
 
 const Ingredients = () => {
   const [userIngredients, dispatch] = useReducer(ingredientReducer, []);
-  const [httpState, dispatchHttp] = useReducer(httpReducer, { loading: false, error: null });
+  const [httpState, dispatchHttp] = useReducer(httpReducer, {
+    loading: false,
+    error: null
+  });
 
   //const [userIngredients, setUserIngredients] = useState([]);
   // const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +71,7 @@ const Ingredients = () => {
     //setUserIngredients(filterIngredients);
   }, []);
 
-  const addIngredientHandler = ingredient => {
+  const addIngredientHandler = useCallback(ingredient => {
     //setIsLoading(true);
     dispatchHttp({ type: 'SEND' });
     fetch('https://react-hooks-b3a98.firebaseio.com/ingredients.json', {
@@ -89,9 +92,9 @@ const Ingredients = () => {
         //   { id: responseData.name, ...ingredient }
         // ]);
       });
-  };
+  }, []);
 
-  const removeIngredientHandler = ingredientId => {
+  const removeIngredientHandler = useCallback(ingredientId => {
     dispatchHttp({ type: 'SEND' });
     fetch(
       `https://react-hooks-b3a98.firebaseio.com/ingredients/${ingredientId}.json`,
@@ -111,12 +114,21 @@ const Ingredients = () => {
         //setError(error.message);
         //setIsLoading(false);
       });
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     //setError(null);
     dispatchHttp({ type: 'CLEAR' });
-  };
+  }, []);
+
+  const ingredientsList = useMemo(() => {
+    return (
+      <IngredientList
+        ingredients={userIngredients}
+        onRemoveItem={removeIngredientHandler}
+      />
+    );
+  }, [userIngredients, removeIngredientHandler]);
 
   return (
     <div className="App">
@@ -131,10 +143,7 @@ const Ingredients = () => {
 
       <section>
         <Search onLoadIngredients={filterIngredientHandler} />
-        <IngredientList
-          ingredients={userIngredients}
-          onRemoveItem={removeIngredientHandler}
-        />
+        {ingredientsList}
       </section>
     </div>
   );
