@@ -27,7 +27,8 @@ const Ingredients = () => {
     error,
     sendRequest,
     reqExtra,
-    reqIdentifier
+    reqIdentifier,
+    clear
   } = useHttp();
 
   useEffect(() => {
@@ -43,7 +44,6 @@ const Ingredients = () => {
 
   const filterIngredientHandler = useCallback(filterIngredients => {
     dispatch({ type: 'SET', ingredients: filterIngredients });
-    //setUserIngredients(filterIngredients);
   }, []);
 
   const addIngredientHandler = useCallback(ingredient => {
@@ -54,27 +54,7 @@ const Ingredients = () => {
       ingredient,
       'ADD_INGREDIENT'
     );
-    //setIsLoading(true);
-    // dispatchHttp({ type: 'SEND' });
-    // fetch('https://react-hooks-b3a98.firebaseio.com/ingredients.json', {
-    //   method: 'POST',
-    //   body: JSON.stringify(ingredient),
-    //   headers: { 'Content-Type': 'application/json' }
-    // })
-    //   .then(response => response.json())
-    //   .then(responseData => {
-    //     dispatchHttp({ type: 'RESPONSE' });
-    //     console.log('responseData', responseData);
-    //     dispatch({
-    //       type: 'ADD',
-    //       ingredient: { id: responseData.name, ...ingredient }
-    //     });
-    //     // setUserIngredients(prevIngredients => [
-    //     //   ...prevIngredients,
-    //     //   { id: responseData.name, ...ingredient }
-    //     // ]);
-    //   });
-  }, []);
+  }, [sendRequest]);
 
   const removeIngredientHandler = useCallback(
     ingredientId => {
@@ -85,34 +65,9 @@ const Ingredients = () => {
         ingredientId,
         'REMOVE_INGREDIENT'
       );
-
-      // dispatchHttp({ type: 'SEND' });
-      // fetch(
-      //   `https://react-hooks-b3a98.firebaseio.com/ingredients/${ingredientId}.json`,
-      //   {
-      //     method: 'DELETE'
-      //   }
-      // )
-      //   .then(response => {
-      //     dispatchHttp({ type: 'RESPONSE' });
-      //     dispatch({ type: 'DELETE', id: ingredientId });
-      //     // setUserIngredients(prevIngredients =>
-      //     //   prevIngredients.filter(ingredient => ingredient.id !== ingredientId)
-      //     // );
-      //   })
-      //   .catch(error => {
-      //     dispatchHttp({ type: 'ERROR', errorMessage: 'Something went wrong' });
-      //     //setError(error.message);
-      //     //setIsLoading(false);
-      //   });
     },
     [sendRequest]
   );
-
-  const clearError = useCallback(() => {
-    //setError(null);
-    //dispatchHttp({ type: 'CLEAR' });
-  }, []);
 
   const ingredientsList = useMemo(() => {
     return (
@@ -125,7 +80,7 @@ const Ingredients = () => {
 
   return (
     <div className="App">
-      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+      {error && <ErrorModal onClose={clear}>{error}</ErrorModal>}
 
       <IngredientForm
         onAddIngredient={addIngredientHandler}
